@@ -1,0 +1,15 @@
+services:
+  cache:
+    image: 'redis:latest'
+    container_name: 'examples_cache'
+    ports:
+      - '6379:6379'
+  api:
+    build: .
+    container_name: 'examples_api'
+    volumes:
+      - .:/app
+    ports:
+      - '8000:8000'
+    depends_on:
+      - cache

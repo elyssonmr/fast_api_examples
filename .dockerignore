@@ -1,0 +1,4 @@
+.ruff_cache
+.git
+.python-version
+*/**/__py_cache__

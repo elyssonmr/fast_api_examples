@@ -1,0 +1,44 @@
+[project]
+name = "fast-api-examples"
+version = "1.0.0"
+description = "Repository containing fast api examples from blog.elyssonmr.com"
+authors = [
+    {name = "Elysson MR",email = "elyssonmr@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+
+dependencies = [
+    "fastapi[standard] (>=0.115.12,<0.116.0)",
+    "redis (>=5.2.1,<6.0.0)",
+    "ipython (>=9.1.0,<10.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+taskipy = "^1.14.1"
+ruff = "^0.11.5"
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+[tool.taskipy.tasks]
+lint = 'ruff check . && ruff check . --diff'
+format = 'ruff check . --fix && ruff format .'
+run = 'fastapi dev examples/app.py'
