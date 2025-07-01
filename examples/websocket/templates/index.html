@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        #chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            background-color: #fafafa;
+        }
+        .input-row {
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: calc(100% - 16px);
+            box-sizing: border-box;
+        }
+        button {
+            padding: 8px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <h2>Simple Chat</h2>
+
+    <div class="input-row">
+        <input type="text" id="name" placeholder="Enter your name">
+    </div>
+
+    <div id="messages"></div>
+
+    <div class="input-row">
+        <input type="text" id="message" placeholder="Enter your message">
+    </div>
+
+    <div>
+        <button id="sendBtn">Send</button>
+        <button id="clearBtn">Clear</button>
+    </div>
+</div>
+
+<script>
+const nameInput = document.getElementById('name');
+const messageInput = document.getElementById('message');
+const sendBtn = document.getElementById('sendBtn');
+const clearBtn = document.getElementById('clearBtn');
+const messagesDiv = document.getElementById('messages');
+
+clearBtn.addEventListener('click', () => {
+    messageInput.value = '';
+    messageInput.focus();
+});
+
+function addMessage(sender, text) {
+    const messageElem = document.createElement('div');
+    messageElem.textContent = `${sender}: ${text}`;
+    messagesDiv.appendChild(messageElem);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+};
+
+let socket = new WebSocket("ws://localhost:8000/ws_chat");
+socket.onmessage = (event) => {
+    // console.log(event)
+    const message = JSON.parse(event.data);
+    addMessage(message.sender, message.text);
+};
+
+sendBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const message = messageInput.value.trim();
+
+    if (!name) {
+        alert("Please enter your name.");
+        return;
+    }
+    if (!message) {
+        alert("Please enter a message.");
+        return;
+    }
+
+    // Display the message locally
+    addMessage(name, message);
+
+    // Send the message via WebSocket
+    const payload = JSON.stringify({ sender: name, message });
+    socket.send(payload);
+
+    // Clear message field only
+    messageInput.value = '';
+    messageInput.focus();
+});
+</script>
+
+</body>
+</html>
